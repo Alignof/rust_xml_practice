@@ -1,4 +1,16 @@
-fn set_feature(child: &minidom::Element) -> Feature {
+fn set_location(child: &minidom::Element, namespace: &str) -> Location {
+    Location {
+        position: None,
+        begin: None,
+        end: None,
+    }
+}
+
+fn set_feature(child: &minidom::Element, namespace: &str) -> Feature {
+    let evidence = match child.attr("evidence") {
+        Some(e) => Some(e.parse::<u8>().unwrap()),
+        None => None,
+    };
     let original = match child.get_child("original", namespace) {
         Some(e) => Some(e.text()),
         None => None,
@@ -8,15 +20,14 @@ fn set_feature(child: &minidom::Element) -> Feature {
         None => None,
     };
 
-    features.push(
-        Feature {
-            f_type: child.attr("type").unwrap(),
-            description: child.attr("description").unwrap(),
-            evidence: child.attr("evidence"),
-            original,
-            variation,
-        }
-    );
+    Feature {
+        f_type: child.attr("type").unwrap().to_string(),
+        description: child.attr("description").unwrap().to_string(),
+        evidence,
+        original,
+        variation,
+        location: set_location,
+    }
 }
 
 fn is_seq_variant(child: &minidom::Element) -> bool {
