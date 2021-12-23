@@ -1,4 +1,6 @@
-fn set_location(child: &minidom::Element, namespace: &str) -> Location {
+fn set_location(feature: &minidom::Element, namespace: &str) -> Location {
+    dgb!(feature);
+
     Location {
         position: None,
         begin: None,
@@ -6,32 +8,32 @@ fn set_location(child: &minidom::Element, namespace: &str) -> Location {
     }
 }
 
-fn set_feature(child: &minidom::Element, namespace: &str) -> Feature {
-    let evidence = match child.attr("evidence") {
+fn set_feature(feature: &minidom::Element, namespace: &str) -> Feature {
+    let evidence = match feature.attr("evidence") {
         Some(e) => Some(e.parse::<u8>().unwrap()),
         None => None,
     };
-    let original = match child.get_child("original", namespace) {
+    let original = match feature.get_child("original", namespace) {
         Some(e) => Some(e.text()),
         None => None,
     };
-    let variation = match child.get_child("variation", namespace) {
+    let variation = match feature.get_child("variation", namespace) {
         Some(e) => Some(e.text()),
         None => None,
     };
 
     Feature {
-        f_type: child.attr("type").unwrap().to_string(),
-        description: child.attr("description").unwrap().to_string(),
+        f_type: feature.attr("type").unwrap().to_string(),
+        description: feature.attr("description").unwrap().to_string(),
         evidence,
         original,
         variation,
-        location: set_location,
+        location: set_location(feature, namespace),
     }
 }
 
-fn is_seq_variant(child: &minidom::Element) -> bool {
-    let f_type = child.attr("type").unwrap();
+fn is_seq_variant(feature: &minidom::Element) -> bool {
+    let f_type = feature.attr("type").unwrap();
     f_type == "sequence variant"
 }
 
