@@ -8,11 +8,11 @@ fn set_location(feature: &minidom::Element, namespace: &str) -> Location {
         None => None,
     };
     let begin = match location.get_child("begin", namespace) {
-        Some(e) => e.attr("begin").map(|p| p.parse::<u32>().unwrap()),
+        Some(e) => e.attr("position").map(|p| p.parse::<u32>().unwrap()),
         None => None,
     };
     let end = match location.get_child("end", namespace) {
-        Some(e) => e.attr("end").map(|p| p.parse::<u32>().unwrap()),
+        Some(e) => e.attr("position").map(|p| p.parse::<u32>().unwrap()),
         None => None,
     };
 
@@ -32,7 +32,10 @@ fn set_feature(feature: &minidom::Element, namespace: &str) -> Feature {
         description: feature
             .attr("description")
             .unwrap()
-            .to_string(),
+            .to_string()
+            .replace(",", "")
+            .replace("Frequently in strain ", "")
+            .replace("In strain: ", ""),
         evidence: feature
             .attr("evidence")
             .map(|s| s.to_string()),
@@ -55,15 +58,23 @@ fn write_to_file(path: &str, features: Vec<Feature>) -> std::io::Result<()> {
     let mut file = File::create(path).unwrap();
 
     for feature in features {
+        dbg!(&feature.location);
+
         writeln!(
             &mut file,
             "{}, {}, {}, {}, {}",
             feature.description,
-            feature.original.unwrap_or("".to_string()),
-            feature.variation.unwrap_or("".to_string()),
+            feature.original
+                .unwrap_or("".to_string()),
+            feature.variation
+                .unwrap_or("".to_string()),
             feature.location.begin
                 .map(|x| format!("{}", x))
-                .unwrap_or("".to_string()),
+                .unwrap_or_else(
+                    || feature.location.position
+                        .map(|x| format!("{}", x))
+                        .unwrap()
+                ),
             feature.location.end
                 .map(|x| format!("{}", x))
                 .unwrap_or("".to_string()),
