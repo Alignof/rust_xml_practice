@@ -22,6 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         f_type,
                         description: child.attr("description").unwrap(),
                         id: ,
+                        evidence: child.attr("evidence"),
                     }
                 );
             */
@@ -41,7 +42,6 @@ struct Location {
 struct Feature {
     f_type: String,
     description: String,
-    id: String,
-    evidence: u8,
+    evidence: Option<u8>,
     location: Location,
 }
