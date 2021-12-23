@@ -8,7 +8,6 @@ fn set_feature(child: &minidom::Element) -> Feature {
         None => None,
     };
 
-/*
     features.push(
         Feature {
             f_type: child.attr("type").unwrap(),
@@ -18,7 +17,6 @@ fn set_feature(child: &minidom::Element) -> Feature {
             variation,
         }
     );
-*/
 }
 
 fn is_seq_variant(child: &minidom::Element) -> bool {
