@@ -1,18 +1,27 @@
 fn set_location(feature: &minidom::Element, namespace: &str) -> Location {
-    dgb!(feature);
+    let location = feature.get_child("location", namespace).unwrap();
+    dbg!(location);
+    let position = match location.get_child("position", namespace) {
+        Some(e) => e.attr("position").map(|p| p.parse::<u32>().unwrap()),
+        None => None,
+    };
+    let begin = match location.get_child("begin", namespace) {
+        Some(e) => e.attr("begin").map(|p| p.parse::<u32>().unwrap()),
+        None => None,
+    };
+    let end = match location.get_child("end", namespace) {
+        Some(e) => e.attr("end").map(|p| p.parse::<u32>().unwrap()),
+        None => None,
+    };
 
     Location {
-        position: None,
-        begin: None,
-        end: None,
+        position,
+        begin,
+        end,
     }
 }
 
 fn set_feature(feature: &minidom::Element, namespace: &str) -> Feature {
-    let evidence = match feature.attr("evidence") {
-        Some(e) => Some(e.parse::<u8>().unwrap()),
-        None => None,
-    };
     let original = match feature.get_child("original", namespace) {
         Some(e) => Some(e.text()),
         None => None,
@@ -25,7 +34,7 @@ fn set_feature(feature: &minidom::Element, namespace: &str) -> Feature {
     Feature {
         f_type: feature.attr("type").unwrap().to_string(),
         description: feature.attr("description").unwrap().to_string(),
-        evidence,
+        evidence: feature.attr("evidence").map(|s| s.to_string()),
         original,
         variation,
         location: set_location(feature, namespace),
@@ -52,6 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if child.is("feature", namespace) {
             if is_seq_variant(child) {
                 println!("{:#?}", child);
+                features.push(set_feature(child, namespace));
             }
         }
     }
@@ -60,15 +70,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 struct Location {
-    position: Option<u8>,
-    begin: Option<u8>,
-    end: Option<u8>,
+    position: Option<u32>,
+    begin: Option<u32>,
+    end: Option<u32>,
 }
 
 struct Feature {
     f_type: String,
     description: String,
-    evidence: Option<u8>,
+    evidence: Option<String>,
     original: Option<String>,
     variation: Option<String>,
     location: Location,
