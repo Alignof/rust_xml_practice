@@ -22,21 +22,12 @@ fn set_location(feature: &minidom::Element, namespace: &str) -> Location {
 }
 
 fn set_feature(feature: &minidom::Element, namespace: &str) -> Feature {
-    let original = match feature.get_child("original", namespace) {
-        Some(e) => Some(e.text()),
-        None => None,
-    };
-    let variation = match feature.get_child("variation", namespace) {
-        Some(e) => Some(e.text()),
-        None => None,
-    };
-
     Feature {
         f_type: feature.attr("type").unwrap().to_string(),
         description: feature.attr("description").unwrap().to_string(),
         evidence: feature.attr("evidence").map(|s| s.to_string()),
-        original,
-        variation,
+        original: feature.get_child("original", namespace).map(|e| e.text()),
+        variation: feature.get_child("variation", namespace).map(|e| e.text()),
         location: set_location(feature, namespace),
     }
 }
