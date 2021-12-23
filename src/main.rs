@@ -1,3 +1,31 @@
+fn set_feature(child: &minidom::Element) -> Feature {
+    let original = match child.get_child("original", namespace) {
+        Some(e) => Some(e.text()),
+        None => None,
+    };
+    let variation = match child.get_child("variation", namespace) {
+        Some(e) => Some(e.text()),
+        None => None,
+    };
+
+/*
+    features.push(
+        Feature {
+            f_type: child.attr("type").unwrap(),
+            description: child.attr("description").unwrap(),
+            evidence: child.attr("evidence"),
+            original,
+            variation,
+        }
+    );
+*/
+}
+
+fn is_seq_variant(child: &minidom::Element) -> bool {
+    let f_type = child.attr("type").unwrap();
+    f_type == "sequence variant"
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let protain_id = "P0DTC2";
@@ -11,21 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for child in entry.children() {
         if child.is("feature", namespace) {
-            let f_type = child.attr("type").unwrap();
-            if f_type == "sequence variant" {
-
+            if is_seq_variant(child) {
                 println!("{:#?}", child);
-
-            /*
-                features.push(
-                    Feature {
-                        f_type,
-                        description: child.attr("description").unwrap(),
-                        id: ,
-                        evidence: child.attr("evidence"),
-                    }
-                );
-            */
             }
         }
     }
@@ -43,5 +58,7 @@ struct Feature {
     f_type: String,
     description: String,
     evidence: Option<u8>,
+    original: Option<String>,
+    variation: Option<String>,
     location: Location,
 }
