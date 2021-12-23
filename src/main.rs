@@ -7,12 +7,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     const namespace: &str = "http://uniprot.org/uniprot";
     let root: minidom::Element = xml.parse().unwrap();
     let entry: &minidom::Element = root.get_child("entry", namespace).unwrap();
-
-    println!("{:#?}", entry);
+    let mut features: Vec<Feature> = Vec::new(); 
 
     for child in entry.children() {
         if child.is("feature", namespace) {
-            println!("{:#?}", child);
+            let f_type = child.attr("type").unwrap();
+            if f_type == "sequence variant" {
+
+                println!("{:#?}", child);
+
+            /*
+                features.push(
+                    Feature {
+                        f_type,
+                        description: child.attr("description").unwrap(),
+                        id: ,
+                    }
+                );
+            */
+            }
         }
     }
 
