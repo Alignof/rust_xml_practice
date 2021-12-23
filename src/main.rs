@@ -58,8 +58,6 @@ fn write_to_file(path: &str, features: Vec<Feature>) -> std::io::Result<()> {
     let mut file = File::create(path).unwrap();
 
     for feature in features {
-        dbg!(&feature.location);
-
         writeln!(
             &mut file,
             "{}, {}, {}, {}, {}",
