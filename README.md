@@ -1,2 +1,2 @@
-# rust_xml_practice
-scrape and analyze xml with reqwest and quick-xml
+# rust\_xml\_practice
+scrape and analyze xml with reqwest and minidom
