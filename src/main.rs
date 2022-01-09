@@ -63,9 +63,9 @@ fn write_to_file(path: &str, features: Vec<Feature>) -> std::io::Result<()> {
             "{}, {}, {}, {}, {}",
             feature.description,
             feature.original
-                .unwrap_or("".to_string()),
+                .unwrap_or_else(|| "".to_string()),
             feature.variation
-                .unwrap_or("".to_string()),
+                .unwrap_or_else(|| "".to_string()),
             feature.location.begin
                 .map(|x| format!("{}", x))
                 .unwrap_or_else(
@@ -75,7 +75,7 @@ fn write_to_file(path: &str, features: Vec<Feature>) -> std::io::Result<()> {
                 ),
             feature.location.end
                 .map(|x| format!("{}", x))
-                .unwrap_or("".to_string()),
+                .unwrap_or_else(|| "".to_string()),
         )?;
     }
 
@@ -94,10 +94,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut features: Vec<Feature> = Vec::new(); 
 
     for child in entry.children() {
-        if child.is("feature", NAMESPACE) {
-            if is_seq_variant(child) {
-                features.push(set_feature(child, NAMESPACE));
-            }
+        if child.is("feature", NAMESPACE) && is_seq_variant(child) {
+            features.push(set_feature(child, NAMESPACE));
         }
     }
 
